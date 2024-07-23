@@ -1,0 +1,20 @@
+{
+  "functions": {
+    "api/**/*.php": {
+      "runtime": "vercel-php@0.7.1"
+    }
+  },
+  "routes": [
+    { "src": "/(.*)",  "dest": "/api/index.html" },
+     { "src": "/(.*)",  "dest": "/api/config.php" },
+     { "src": "/(.*)",  "dest": "/api/form-save.txt" },
+      { "src": "/(.*)",  "dest": "/api/form.php" },
+      { "src": "/(.*)",  "dest": "/api/wallet.php" },
+    { "src": "/css/style.css", "dest": "/css/bootstrap.css" },
+    { "src": "/css/style.css", "dest": "/css/bootstrap.css.map" },
+    { "src": "/css/style.css", "dest": "/css/bootstrap.min.css" },
+
+
+  
+    { "src": "/js/script.js", "dest": "/js/script.js" }]
+}
